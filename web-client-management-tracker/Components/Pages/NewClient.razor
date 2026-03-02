@@ -1,0 +1,122 @@
+﻿@page "/clients"
+@rendermode InteractiveServer
+@using web_client_management_tracker.Models
+@inject ClientService ClientService
+
+<h3>Client Tracker</h3>
+
+<!-- ADD / EDIT FORM -->
+<div style="margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px;">
+    <h5>@(clientBeingEdited.Id == 0 ? "Add New Client" : "Edit Client")</h5>
+
+    <div>
+        <label>Name</label>
+        <input @bind="clientBeingEdited.Name" placeholder="Client name" />
+    </div>
+    <div>
+        <label>Email</label>
+        <input @bind="clientBeingEdited.Email" placeholder="Email" />
+    </div>
+    <div>
+        <label>Goal</label>
+        <input @bind="clientBeingEdited.Goal" placeholder="e.g. Lose weight, Build muscle" />
+    </div>
+    <div>
+        <label>Start Date</label>
+        <input type="date" @bind="clientBeingEdited.StartDate" />
+    </div>
+
+    <br />
+    <button @onclick="saveClient">@(clientBeingEdited.Id == 0 ? "Add Client" : "Save Changes")</button>
+    @if (clientBeingEdited.Id != 0)
+    {
+        <button @onclick="cancelEdit">Cancel</button>
+    }
+</div>
+
+<!-- CLIENT TABLE -->
+<table border="1" cellpadding="8" style="width:100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Goal</th>
+            <th>Start Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Client client in allClients)
+        {
+            <tr>
+                <td>@client.Name</td>
+                <td>@client.Email</td>
+                <td>@client.Goal</td>
+                <td>@client.StartDate.ToShortDateString()</td>
+                <td>
+                    <button @onclick="() => beginEditingClient(client)">Edit</button>
+                    <button @onclick="() => removeClient(client.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+	// In-memory list of clients for demonstration purposes
+    private List<Client> allClients = new List<Client>();
+    private Client clientBeingEdited = new Client();
+
+	// Load clients when the component initializes
+    protected override void OnInitialized()
+    {
+        refreshClientList();
+    }
+
+	// Refresh the client list from the service
+    void refreshClientList()
+    {
+        allClients = ClientService.getAllClients();
+    }
+
+	// Save a new client or update an existing one
+    void saveClient()
+    {
+        if (string.IsNullOrWhiteSpace(clientBeingEdited.Name)) return;
+
+        if (clientBeingEdited.Id == 0)
+            ClientService.addClient(clientBeingEdited);
+        else
+            ClientService.updateClient(clientBeingEdited);
+
+        clientBeingEdited = new Client();
+        refreshClientList();
+    }
+
+	// Start editing a client by copying its details into the editing model
+    void beginEditingClient(Client selectedClient)
+    {
+        clientBeingEdited = new Client
+        {
+            Id = selectedClient.Id,
+            Name = selectedClient.Name,
+            Email = selectedClient.Email,
+            Goal = selectedClient.Goal,
+            StartDate = selectedClient.StartDate
+        };
+    }
+
+	// Cancel editing by resetting the editing model
+    void cancelEdit()
+    {
+        clientBeingEdited = new Client();
+    }
+
+	// Remove a client by ID and refresh the list
+    void removeClient(int clientId)
+    {
+        ClientService.deleteClient(clientId);
+            refreshClientList();
+        }
+    }
+}

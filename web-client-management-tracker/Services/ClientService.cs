@@ -9,7 +9,7 @@ namespace web_client_management_tracker.Models
         private int nextId = 1;
 
         // Add a new newClient to the list
-        public List <Client> getAllClient() => clientList;
+        public List <Client> getAllClients() => clientList;
 
         //
         // METHOD: addClient
@@ -35,7 +35,7 @@ namespace web_client_management_tracker.Models
         // Client updatedClient - The client object that contains the updated details of the client to be modified.
         // RETURNS: n/a
         //
-        public void updateclient(Client updatedClient)
+        public void updateClient(Client updatedClient)
         {
             // Find the existing client in the list by matching the Id
             Client? existingClient = clientList.FirstOrDefault(client => client.Id == updatedClient.Id);
@@ -58,10 +58,10 @@ namespace web_client_management_tracker.Models
         // PARAMETERS:
         // Client clientId - The client object that contains the Id of the client to be deleted.
         // RETURNS: n/a
-        public void deleteClient(Client clientId)
+        public void deleteClient(int clientId)
         {
             // Find the client in the list by matching the Id
-            Client? clientToDelete = clientList.FirstOrDefault(client => client.Id == clientId.Id);
+            Client? clientToDelete = clientList.FirstOrDefault(client => client.Id == clientId);
 
             // If the client is found, remove it from the list
             if (clientToDelete != null)
