@@ -1,4 +1,6 @@
-﻿namespace web_client_management_tracker.Models
+﻿// File : Client.cs
+
+namespace web_client_management_tracker.Models
 {
     public class Client
     {
